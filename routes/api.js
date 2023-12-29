@@ -17,7 +17,8 @@ module.exports = function (app) {
       try {
         const books = await Book.find({});
         if (!books) {
-          return res.send([]);
+          res.send([])
+          return 
         }
         const formData = books.map((book) => {
           return {
@@ -27,7 +28,8 @@ module.exports = function (app) {
             commentsCount: book.comments.length,
           };
         });
-        return res.send(formData)
+        res.send(formData)
+        return 
       } catch (error) {
         res.send([]);
       }
@@ -63,14 +65,14 @@ module.exports = function (app) {
       let bookid = req.params.id;
       try {
         const book = await Book.findById(bookid);
-        res.json({
+        res.send({
           _id: book._id,
           title: book.title,
           comments: book.comments,
           commentsCount: book.comments.length,
         })
       } catch (error) {
-        res.send('Error getting book: ' + error.message);
+        res.send('no book exists');
       }
     })
 
@@ -81,10 +83,10 @@ module.exports = function (app) {
         return res.send("Missing required field comment")
       }
       try {
-        const book = await Book.findById(bookid);
+        let book = await Book.findById(bookid);
         book.comments.push(comment)
         book = await book.save()
-        res.send({
+        res.json({
           _id: book._id,
           title: book.title,
           comments: book.comments,
@@ -99,7 +101,6 @@ module.exports = function (app) {
       let bookid = req.params.id;
       try {
         const deleted = await Book.findByIdAndDelete(bookid)
-        console.log('Deleted book: ' + deleted);
         if(!deleted){
           throw new Error("No book exists")
         }
